@@ -1,0 +1,24 @@
+{
+  "name": "slack-skb",
+  "version": "1.0.0",
+  "description": "Simple point tracking",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nstanard/slack-skb.git"
+  },
+  "author": "Neal Stanard",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nstanard/slack-skb/issues"
+  },
+  "homepage": "https://github.com/nstanard/slack-skb#readme",
+  "dependencies": {
+    "@slack/bolt": "^3.9.0",
+    "mongodb": "^4.3.1",
+    "nconf": "^0.11.3"
+  }
+}
