@@ -12,6 +12,7 @@ async function postMessage(client, event, message) {
 	});
 }
 
+const state = {};
 const listen = function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
@@ -31,19 +32,15 @@ const listen = function (app) {
 						return;
 					}
 					
-					// const currentKarma = users.findOne({ name: userToKarma.real_name });
-					// console.log(currentKarma);
-					// let newPointValue;
-					// if (currentKarma) {
-					//   newPointValue = operator === '++' ? currentKarma.points + 1 : currentKarma.points - 1;
-					//   users.update()
-					// } else {
-					//   newPointValue = 1;
-					//   users.insert({ name: userToKarma.real_name, points: newPointValue });
-					// }
-					// console.log(newPointValue);
-					
-					await postMessage(client, event, `${userToKarma.real_name} now has ${newPointValue} karma.`); // AWARD KARMA AND REPORT
+					if (!state[userToKarma.real_name]) {
+						if (operator === '++') state[userToKarma.real_name] = 1;
+						if (operator === '--') state[userToKarma.real_name] = -1;
+					} else {
+						if (operator === '++') state[userToKarma.real_name]++;
+						if (operator === '--') state[userToKarma.real_name]--;
+					}
+
+					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 				} else if (possibleUsers?.length > 1) {
 					await postMessage(client, event, `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map(user => user.name).join(', ')}`);
 					return;
@@ -63,16 +60,16 @@ const listen = function (app) {
 					return;
 				}
 				
-				// const currentKarma = users.findOne({ name: userToKarma.real_name });
-				// let newPointValue;
-				// if (currentKarma) {
-				//   newPointValue = operator === '++' ? currentKarma.points + 1 : currentKarma.points - 1;
-				// } else {
-				//   newPointValue = 1;
-				// }
+				if (!state[userToKarma.real_name]) {
+					if (operator === '++') state[userToKarma.real_name] = 1;
+					if (operator === '--') state[userToKarma.real_name] = -1;
+				} else {
+					if (operator === '++') state[userToKarma.real_name]++;
+					if (operator === '--') state[userToKarma.real_name]--;
+				}
 				
 				users.insert({ name: userToKarma.real_name, points: newPointValue });
-				await postMessage(client, event, `${userToKarma.real_name} now has ${newPointValue} karma.`); // AWARD KARMA AND REPORT
+				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 			} else if (/^karma all/.test(event?.text)) {
 				// TODO: List all users karma from the db
 			} else if (/^karma/.test(event?.text)) {
