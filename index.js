@@ -1,15 +1,7 @@
 'use strict';
 // require('./dbConnect');
-const { App } = require('@slack/bolt');
+const app = require('./appInit');
 const { postMessage } = require('./functions');
-
-const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-  socketMode: true,
-  appToken: process.env.SLACK_APP_TOKEN,
-  // port: process.env.PORT || 3000 // Not for socket mode... 
-});
 
 const MATCH_FROM_START_PATTERN = /^([A-z.]+\s?)(\+\+|--)$/;
 const MATCH_ANYWHERE_PATTERN = /^.*?@(.*)(\+\+|--).*?/;
@@ -40,7 +32,19 @@ app.event('message', async ({ event, client, logger }) => {
           return;
         }
 
-        await postMessage(client, event, `${userToKarma.real_name} now has _ karma.`); // AWARD KARMA AND REPORT
+        // const currentKarma = users.findOne({ name: userToKarma.real_name });
+        // console.log(currentKarma);
+        // let newPointValue;
+        // if (currentKarma) {
+        //   newPointValue = operator === '++' ? currentKarma.points + 1 : currentKarma.points - 1;
+        //   users.update()
+        // } else {
+        //   newPointValue = 1;
+        //   users.insert({ name: userToKarma.real_name, points: newPointValue });
+        // }
+        // console.log(newPointValue);
+
+        await postMessage(client, event, `${userToKarma.real_name} now has ${newPointValue} karma.`); // AWARD KARMA AND REPORT
       } else if (possibleUsers?.length > 1) {
         await postMessage(client, event, `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map(user => user.name).join(', ')}`);
         return;
@@ -60,7 +64,16 @@ app.event('message', async ({ event, client, logger }) => {
         return;
       }
 
-      await postMessage(client, event, `${userToKarma.real_name} now has _ karma.`); // AWARD KARMA AND REPORT
+      // const currentKarma = users.findOne({ name: userToKarma.real_name });
+      // let newPointValue;
+      // if (currentKarma) {
+      //   newPointValue = operator === '++' ? currentKarma.points + 1 : currentKarma.points - 1;
+      // } else {
+      //   newPointValue = 1;
+      // }
+
+      users.insert({ name: userToKarma.real_name, points: newPointValue });
+      await postMessage(client, event, `${userToKarma.real_name} now has ${newPointValue} karma.`); // AWARD KARMA AND REPORT
     } else if (/^karma all/.test(event?.text)) {
       // TODO: List all users karma from the db
     } else if (/^karma/.test(event?.text)) {
