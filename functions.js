@@ -7,6 +7,6 @@ async function postMessage(client, event, message) {
     });
 }
 
-export {
+module.exports = {
     postMessage
 };
