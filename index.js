@@ -32,6 +32,7 @@ app.event('message', async ({ event, client, logger }) => {
   try {
     if (/^([A-z.]+\s?)(\+\+|--)$/.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
       const match = event.text.match(/^([A-z.]+\s?)(\+\+|--)$/);
+      const operator = match[2];
       const targetUserId = match[1].trim().replace('>', '');
       // TODO: Add and remove karma from user in the db
       // real_name and name could both match...
@@ -47,7 +48,11 @@ app.event('message', async ({ event, client, logger }) => {
           return;
         }
 
-        // TODO: add / remove karma
+        // TODO: add / remove karma userToKarma.name
+        await client.chat.postMessage({
+          channel: event.channel,
+          text: `${userToKarma.real_name} now has _ karma.`
+        });
 
       } else if (possibleUsers?.length > 1) {
         await client.chat.postMessage({
@@ -64,11 +69,12 @@ app.event('message', async ({ event, client, logger }) => {
       }
     } else if (/^.*?@(.*)(\+\+|--).*?/.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
       const match = event.text.match(/^.*?@(.*)(\+\+|--).*?/);
+      const operator = match[2];
       const targetUserId = match[1].trim().replace('>', '');
       const userToKarma = activeUsers.find(user => user.id === targetUserId);
       if (!userToKarma) return;
 
-      if (event.user === targetUserId) {
+      if (event.user === userToKarma.id) {
         await client.chat.postMessage({
           channel: event.channel,
           text: `Hey, you can't give yourself karma!`
@@ -76,12 +82,11 @@ app.event('message', async ({ event, client, logger }) => {
         return;
       }
 
-      // TODO: add / remove karma
-
-      // await client.chat.postMessage({
-      //   channel: event.channel,
-      //   text: `${userToKarma.real_name} now has _ karma.`
-      // });
+      // TODO: add / remove karma userToKarma.name
+      await client.chat.postMessage({
+        channel: event.channel,
+        text: `${userToKarma.real_name} now has _ karma.`
+      });
     } else if (/^karma all/.test(event?.text)) {
       // TODO: List all users karma from the db
       // await client.chat.postMessage({
