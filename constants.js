@@ -68,7 +68,6 @@ const listen = function (app) {
 					if (operator === '--') state[userToKarma.real_name]--;
 				}
 				
-				users.insert({ name: userToKarma.real_name, points: newPointValue });
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 			} else if (/^karma all/.test(event?.text)) {
 				// TODO: List all users karma from the db
