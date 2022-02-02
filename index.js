@@ -2,6 +2,7 @@
 // require('./dbConnect');
 const { App } = require('@slack/bolt');
 const { postMessage } = require('./functions');
+
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -12,7 +13,6 @@ const app = new App({
 
 const MATCH_FROM_START_PATTERN = /^([A-z.]+\s?)(\+\+|--)$/;
 const MATCH_ANYWHERE_PATTERN = /^.*?@(.*)(\+\+|--).*?/;
-const DEBUG = false;
 
 /**
  * <name>++ | <name> ++   : Adds karma to a user
