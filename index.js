@@ -1,12 +1,7 @@
 'use strict';
-
 // require('./dbConnect');
-
 const { App } = require('@slack/bolt');
-
-const DEBUG = false;
-// Idea: Create a karma-logs channel and if debug is set - post to that channel the logging of this bolt script
-
+const { postMessage } = require('./functions');
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -15,7 +10,9 @@ const app = new App({
   // port: process.env.PORT || 3000 // Not for socket mode... 
 });
 
-// https://slack.dev/bolt-js/tutorial/getting-started
+const MATCH_FROM_START_PATTERN = /^([A-z.]+\s?)(\+\+|--)$/;
+const MATCH_ANYWHERE_PATTERN = /^.*?@(.*)(\+\+|--).*?/;
+const DEBUG = false;
 
 /**
  * <name>++ | <name> ++   : Adds karma to a user
@@ -30,79 +27,49 @@ app.event('message', async ({ event, client, logger }) => {
   const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
 
   try {
-    if (/^([A-z.]+\s?)(\+\+|--)$/.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
-      const match = event.text.match(/^([A-z.]+\s?)(\+\+|--)$/);
+    if (MATCH_FROM_START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
+      const match = event.text.match(MATCH_FROM_START_PATTERN);
       const operator = match[2];
       const targetUserId = match[1].trim().replace('>', '');
-      // TODO: Add and remove karma from user in the db
-      // real_name and name could both match...
       const possibleUsers = activeUsers.filter(user => user.name === targetUserId || user.real_name === targetUserId);
       if (possibleUsers?.length === 1) {
         const userToKarma = possibleUsers[0];
 
         if (event.user === userToKarma.id) {
-          await client.chat.postMessage({
-            channel: event.channel,
-            text: `Hey, you can't give yourself karma!`
-          });
+          await postMessage(client, event, `Hey, you can't give yourself karma!`);
           return;
         }
 
-        // TODO: add / remove karma userToKarma.name
-        await client.chat.postMessage({
-          channel: event.channel,
-          text: `${userToKarma.real_name} now has _ karma.`
-        });
-
+        await postMessage(client, event, `${userToKarma.real_name} now has _ karma.`); // AWARD KARMA AND REPORT
       } else if (possibleUsers?.length > 1) {
-        await client.chat.postMessage({
-          channel: event.channel,
-          text: `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map(user => user.name).join(', ')}`
-        });
+        await postMessage(client, event, `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map(user => user.name).join(', ')}`);
         return;
       } else {
-        await client.chat.postMessage({
-          channel: event.channel,
-          text: `Sorry, I don't recognize the user named ${targetUserId}`
-        });
+        await postMessage(client, event, `Sorry, I don't recognize the user named ${targetUserId}`);
         return;
       }
-    } else if (/^.*?@(.*)(\+\+|--).*?/.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
-      const match = event.text.match(/^.*?@(.*)(\+\+|--).*?/);
+    } else if (MATCH_ANYWHERE_PATTERN.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
+      const match = event.text.match(MATCH_ANYWHERE_PATTERN);
       const operator = match[2];
       const targetUserId = match[1].trim().replace('>', '');
       const userToKarma = activeUsers.find(user => user.id === targetUserId);
       if (!userToKarma) return;
 
       if (event.user === userToKarma.id) {
-        await client.chat.postMessage({
-          channel: event.channel,
-          text: `Hey, you can't give yourself karma!`
-        });
+        await postMessage(client, event, `Hey, you can't give yourself karma!`);
         return;
       }
 
-      // TODO: add / remove karma userToKarma.name
-      await client.chat.postMessage({
-        channel: event.channel,
-        text: `${userToKarma.real_name} now has _ karma.`
-      });
+      await postMessage(client, event, `${userToKarma.real_name} now has _ karma.`); // AWARD KARMA AND REPORT
     } else if (/^karma all/.test(event?.text)) {
       // TODO: List all users karma from the db
-      // await client.chat.postMessage({
-      //   channel: event.channel,
-      //   text: `3 ${event.text}`
-      // });
     } else if (/^karma/.test(event?.text)) {
-      await client.chat.postMessage({
-        channel: event.channel,
-        text: `Commands: 
-          - *'@<name>++ | @<name>--'* adds or removes karma for a user
-          - *'karma @<name>'* shows karma for the named user
-          - *'karma all'* shows all users karma
-          - *'karma'* shows this list of commands
-        `
-      });
+      await postMessage(client, event, `Commands: 
+        - *'@<name>++ | @<name>--'* adds or removes karma for a user
+        - *'karma @<name>'* shows karma for the named user
+        - *'karma all'* shows all users karma
+        - *'karma'* shows this list of commands
+      `);
     }
   }
   catch (error) {
