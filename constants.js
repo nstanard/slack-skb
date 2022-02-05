@@ -40,11 +40,21 @@ function getTargetUserAndOperator(text) {
 	};
 }
 
+function getTupplesFromState(params) {
+	return Object.entries(state);
+}
+
+function getFormattedUserList() {
+	return getTupplesFromState().reduce((acc, item, ind) => {
+		return acc + `${ind}. ${item[0]}: ${item[1]}` + '\n'
+	}, '');
+}
+
 const listen = function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
-		
+
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
@@ -82,7 +92,8 @@ const listen = function (app) {
 				adjustKarma(state, userToKarma, operator);
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 			} else if (/^karma all/.test(event?.text)) {
-				// TODO: List all users karma from the db
+				const userList = getFormattedUserList();
+				await postMessage(client, event, userList); // AWARD KARMA AND REPORT
 			} else if (/^karma/.test(event?.text)) {
 				await postMessage(client, event, `Commands: 
 				- *'@<name>++ | @<name>--'* adds or removes karma for a user
