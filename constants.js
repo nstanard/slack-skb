@@ -5,7 +5,7 @@ const MATCH = {
 	ANYWHERE_PATTERN: /^.*?@(.*)(\+\+|--).*?/,
 };
 
-async function postMessage(client, event, message) {
+const postMessage = async function(client, event, message) {
 	return await client.chat.postMessage({
 		channel: event.channel,
 		text: message
@@ -14,22 +14,22 @@ async function postMessage(client, event, message) {
 
 const state = {};
 
-function adjustKarma(state, userToKarma, operator) {
+const adjustKarma = function(state, userToKarma, operator) {
 	if (operator === '++') addKarma(state, userToKarma);
 	if (operator === '--') removeKarma(state, userToKarma);
 }
 
-function addKarma(state, userToKarma) {
+const addKarma = function(state, userToKarma) {
 	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = 1;
 	if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
 };
 
-function removeKarma(state, userToKarma) {
+const removeKarma = function(state, userToKarma) {
 	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = -1;
 	if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
 }
 
-function getTargetUserAndOperator(text) {
+const getTargetUserAndOperator = function(text) {
 	const match = text.match(MATCH.START_PATTERN);
 	const operator = match[2];
 	const targetUserId = match[1].trim().replace('>', '');
@@ -40,11 +40,11 @@ function getTargetUserAndOperator(text) {
 	};
 }
 
-function getTupplesFromState(params) {
+const getTupplesFromState = function(params) {
 	return Object.entries(state);
 }
 
-function getFormattedUserList() {
+const getFormattedUserList = function() {
 	return getTupplesFromState().reduce((acc, item, ind) => {
 		return acc + `${ind}. ${item[0]}: ${item[1]}` + '\n'
 	}, '');
