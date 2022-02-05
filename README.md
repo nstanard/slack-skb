@@ -9,3 +9,17 @@ Simple Karma Bot
 ## Learning Material
 
  - https://www.youtube.com/watch?v=rUIptoPXu_8
+
+
+## Socket Mode
+
+### AWS + Terraform + Lambda
+
+### GCloud + Cloud Function
+
+## HTTP Mode
+
+
+### AWS + Terraform + EC2
+
+### GCloud + Compute Engine

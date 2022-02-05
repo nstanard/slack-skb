@@ -13,6 +13,33 @@ async function postMessage(client, event, message) {
 }
 
 const state = {};
+
+function adjustKarma(state, userToKarma, operator) {
+	if (operator === '++') addKarma(state, userToKarma);
+	if (operator === '--') removeKarma(state, userToKarma);
+}
+
+function addKarma(state, userToKarma) {
+	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = 1;
+	if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
+};
+
+function removeKarma(state, userToKarma) {
+	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = -1;
+	if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
+}
+
+function getTargetUserAndOperator(text) {
+	const match = text.match(MATCH.START_PATTERN);
+	const operator = match[2];
+	const targetUserId = match[1].trim().replace('>', '');
+
+	return {
+		operator,
+		targetUserId
+	};
+}
+
 const listen = function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
@@ -20,26 +47,19 @@ const listen = function (app) {
 		
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
-				const match = event.text.match(MATCH.START_PATTERN);
-				const operator = match[2];
-				const targetUserId = match[1].trim().replace('>', '');
+				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
 				const possibleUsers = activeUsers.filter(user => user.name === targetUserId || user.real_name === targetUserId);
 				if (possibleUsers?.length === 1) {
 					const userToKarma = possibleUsers[0];
-					
-					if (event.user === userToKarma.id) {
+					if (!userToKarma) {
+						await postMessage(client, event, `Failed to find a possible user.`);
+						return;
+					} else if (event.user === userToKarma.id) {
 						await postMessage(client, event, `Hey, you can't give yourself karma!`);
 						return;
 					}
-					
-					if (!state[userToKarma.real_name]) {
-						if (operator === '++') state[userToKarma.real_name] = 1;
-						if (operator === '--') state[userToKarma.real_name] = -1;
-					} else {
-						if (operator === '++') state[userToKarma.real_name]++;
-						if (operator === '--') state[userToKarma.real_name]--;
-					}
 
+					adjustKarma(state, userToKarma, operator);
 					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 				} else if (possibleUsers?.length > 1) {
 					await postMessage(client, event, `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map(user => user.name).join(', ')}`);
@@ -49,25 +69,17 @@ const listen = function (app) {
 					return;
 				}
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
-				const match = event.text.match(MATCH.ANYWHERE_PATTERN);
-				const operator = match[2];
-				const targetUserId = match[1].trim().replace('>', '');
+				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
 				const userToKarma = activeUsers.find(user => user.id === targetUserId);
-				if (!userToKarma) return;
-				
-				if (event.user === userToKarma.id) {
+				if (!userToKarma) {
+					await postMessage(client, event, `Failed to find a possible user.`);
+					return;
+				} else if (event.user === userToKarma.id) {
 					await postMessage(client, event, `Hey, you can't give yourself karma!`);
 					return;
 				}
-				
-				if (!state[userToKarma.real_name]) {
-					if (operator === '++') state[userToKarma.real_name] = 1;
-					if (operator === '--') state[userToKarma.real_name] = -1;
-				} else {
-					if (operator === '++') state[userToKarma.real_name]++;
-					if (operator === '--') state[userToKarma.real_name]--;
-				}
-				
+
+				adjustKarma(state, userToKarma, operator);
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 			} else if (/^karma all/.test(event?.text)) {
 				// TODO: List all users karma from the db
