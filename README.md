@@ -13,13 +13,14 @@ Simple Karma Bot
 
 ## Socket Mode
 
-### AWS + Terraform + Lambda
+### AWS + Terraform + EC2
+
+ - 
 
 ### GCloud + Cloud Function
 
 ## HTTP Mode
 
-
-### AWS + Terraform + EC2
+### AWS + Terraform + Lambda
 
 ### GCloud + Compute Engine
