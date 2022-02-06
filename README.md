@@ -15,7 +15,8 @@ Simple Karma Bot
 
 ### AWS + Terraform + EC2
 
- - 
+ - Terraform Managed ECS instance running the js-bolt app via docker
+ - Terraform managed MongoDB instance that the js-bolt app can read/write to/from
 
 ### GCloud + Cloud Function
 

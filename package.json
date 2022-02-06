@@ -17,8 +17,6 @@
   },
   "homepage": "https://github.com/nstanard/slack-skb#readme",
   "dependencies": {
-    "@slack/bolt": "^3.9.0",
-    "mongodb": "^4.3.1",
-    "nconf": "^0.11.3"
+    "@slack/bolt": "^3.9.0"
   }
 }
