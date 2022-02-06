@@ -44,6 +44,8 @@ SLACK_BOT_TOKEN=<KEY_HERE>
 SLACK_APP_TOKEN=<KEY_HERE>
 ```
 
+_You can find these secret values in the [slack api app settings](https://api.slack.com/apps/)_
+
 ### Docs
 
  - https://slack.dev/bolt-js/concepts
