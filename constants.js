@@ -5,6 +5,11 @@ const MATCH = {
 	ANYWHERE_PATTERN: /^.*?@(.*)(\+\+|--).*?/,
 };
 
+const OPERATORS = {
+	PLUS: '++',
+	MINUS: '--'
+}
+
 const postMessage = async function(client, event, message) {
 	return await client.chat.postMessage({
 		channel: event.channel,
@@ -15,8 +20,8 @@ const postMessage = async function(client, event, message) {
 const state = {};
 
 const adjustKarma = function(state, userToKarma, operator) {
-	if (operator === '++') addKarma(state, userToKarma);
-	if (operator === '--') removeKarma(state, userToKarma);
+	if (operator === OPERATORS.PLUS) addKarma(state, userToKarma);
+	if (operator === OPERATORS.MINUS) removeKarma(state, userToKarma);
 }
 
 const addKarma = function(state, userToKarma) {
@@ -64,7 +69,7 @@ const listen = function (app) {
 					if (!userToKarma) {
 						await postMessage(client, event, `Failed to find a possible user.`);
 						return;
-					} else if (event.user === userToKarma.id) {
+					} else if (operator === OPERATORS.PLUS && event.user === userToKarma.id) {
 						await postMessage(client, event, `Hey, you can't give yourself karma!`);
 						return;
 					}
@@ -84,7 +89,7 @@ const listen = function (app) {
 				if (!userToKarma) {
 					await postMessage(client, event, `Failed to find a possible user.`);
 					return;
-				} else if (event.user === userToKarma.id) {
+				} else if (operator === OPERATORS.PLUS && event.user === userToKarma.id) {
 					await postMessage(client, event, `Hey, you can't give yourself karma!`);
 					return;
 				}

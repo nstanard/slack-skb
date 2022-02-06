@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "build": "docker build -t slack-skb .",
-    "run": "docker run -p 12345:3000 -d slack-skb",
-    "tag": "docker tag slack-skb:latest 475566676433.dkr.ecr.us-east-1.amazonaws.com/slack_skb:latest",
-    "push": "docker push 475566676433.dkr.ecr.us-east-1.amazonaws.com/slack_skb:latest"
+    "dbuild": "docker build -t slack-skb .",
+    "drun": "docker run -p 12345:3000 -d slack-skb",
+    "dtag": "docker tag slack-skb:latest 475566676433.dkr.ecr.us-east-1.amazonaws.com/slack_skb:latest",
+    "dpush": "docker push 475566676433.dkr.ecr.us-east-1.amazonaws.com/slack_skb:latest"
   },
   "repository": {
     "type": "git",
