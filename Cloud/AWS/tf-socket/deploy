@@ -1,4 +1,16 @@
 #!/bin/bash
 
-terraform apply
-cd ../../../ && npm run dbuild && npm run dtag && npm run dpush;
+echo ""
+read -p "Would you like to apply the terraform? [Y/n]: " response
+response=${response:-y}
+if [ "$response" = "y" ]; then
+    terraform apply
+fi
+
+
+echo ""
+read -p "Would you like to build, tag, and push the docker image? [Y/n]: " response
+response=${response:-y}
+if [ "$response" = "y" ]; then
+    cd ../../../ && npm run dbuild && npm run dtag && npm run dpush;
+fi
