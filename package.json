@@ -4,7 +4,9 @@
   "description": "Simple point tracking",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "dbuild": "docker build -t slack-skb .",
+    "drun": "docker run -p 12345:3000 -d slack-skb"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/nstanard/slack-skb#readme",
   "dependencies": {
-    "@slack/bolt": "^3.9.0"
+    "@slack/bolt": "^3.9.0",
+    "dotenv": "^16.0.0"
   }
 }

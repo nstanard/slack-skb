@@ -33,7 +33,6 @@ const getTargetUserAndOperator = function(text) {
 	const match = text.match(MATCH.START_PATTERN);
 	const operator = match[2];
 	const targetUserId = match[1].trim().replace('>', '');
-
 	return {
 		operator,
 		targetUserId
@@ -58,7 +57,8 @@ const listen = function (app) {
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
-				const possibleUsers = activeUsers.filter(user => user.name === targetUserId || user.real_name === targetUserId);
+				// lowercase and check both name and real_name
+				const possibleUsers = activeUsers.filter(user => user.name.toLowerCase() === targetUserId.toLowerCase() || user.real_name.toLowerCase() === targetUserId.toLowerCase());
 				if (possibleUsers?.length === 1) {
 					const userToKarma = possibleUsers[0];
 					if (!userToKarma) {
@@ -80,7 +80,7 @@ const listen = function (app) {
 				}
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
-				const userToKarma = activeUsers.find(user => user.id === targetUserId);
+				const userToKarma = activeUsers.find(user => user.id === targetUserId); // targetUserId is a unique ID here as a result of the @ syntax
 				if (!userToKarma) {
 					await postMessage(client, event, `Failed to find a possible user.`);
 					return;
