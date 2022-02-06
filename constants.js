@@ -34,8 +34,8 @@ const removeKarma = function(state, userToKarma) {
 	else if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
 }
 
-const getTargetUserAndOperator = function(text) {
-	const match = text.match(MATCH.START_PATTERN);
+const getTargetUserAndOperator = function(text, pattern) {
+	const match = text.match(pattern);
 	const operator = match[2];
 	const targetUserId = match[1].trim().replace('>', '');
 	return {
@@ -59,11 +59,14 @@ const listen = function (app) {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
 		
+		await postMessage(client, event, `${JSON.stringify(MATCH.ANYWHERE_PATTERN.test(event?.text))}`);
+		await postMessage(client, event, `${JSON.stringify(event)}`);
 		await postMessage(client, event, `${activeUsers.map(u => u.name).join(', ')}`);
+		await postMessage(client, event, `${activeUsers.map(u => u.real_name).join(', ')}`);
 
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
-				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
+				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.START_PATTERN);
 				// lowercase and check both name and real_name
 				const possibleUsers = activeUsers.filter(user => user.name.toLowerCase() === targetUserId.toLowerCase() || user.real_name.toLowerCase() === targetUserId.toLowerCase());
 				if (possibleUsers?.length === 1) {
@@ -88,7 +91,8 @@ const listen = function (app) {
 					return;
 				}
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
-				const { operator, targetUserId } = getTargetUserAndOperator(event.text);
+				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
+				await postMessage(client, event, `targetUserId: ${targetUserId}`);
 				const userToKarma = activeUsers.find(user => user.id === targetUserId); // targetUserId is a unique ID here as a result of the @ syntax
 				if (!userToKarma) {
 					await postMessage(client, event, `Failed to find a possible user.`);
