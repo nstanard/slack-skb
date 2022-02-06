@@ -58,6 +58,8 @@ const listen = function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
+		
+		await postMessage(client, event, `${activeUsers.map(u => u.name).join(', ')}`);
 
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
@@ -73,6 +75,8 @@ const listen = function (app) {
 						await postMessage(client, event, `Hey, you can't give yourself karma!`);
 						return;
 					}
+
+					// await postMessage(client, event, ``);
 
 					adjustKarma(state, userToKarma, operator);
 					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
@@ -94,7 +98,8 @@ const listen = function (app) {
 					return;
 				}
 
-				console.log('userToKarma: ', JSON.parse(JSON.stringify(userToKarma)));
+				// await postMessage(client, event, ``);
+
 				adjustKarma(state, userToKarma, operator);
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 			} else if (/^karma all/.test(event?.text)) {
