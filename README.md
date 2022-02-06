@@ -37,6 +37,7 @@ SLACK_APP_TOKEN=<KEY_HERE>
     - COMPLETE: Create the IAM settings and service/task definitions
     - COMPLETE: Create a fargate service that runs this docker image
     - COMPLETE: Bolt-JS app running in AWS and picking up on slack messages.
+    - TODO: Have the docker image tag'd and pushed as part of the terraform apply command
 
  - Terraform managed MongoDB instance that the js-bolt app can read/write to/from
 
