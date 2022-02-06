@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs_role" {
-  name = "ecs_role_example_app"
+  name = "ecs_role_slack_skb"
 
   assume_role_policy = <<POLICY
 {

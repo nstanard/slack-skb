@@ -1,5 +1,5 @@
 resource "aws_ecs_task_definition" "backend_task" {
-    family = "backend_example_app_family"
+    family = "backend_slack_skb_family"
 
     // Fargate is a type of ECS that requires awsvpc network_mode
     requires_compatibilities = ["FARGATE"]
@@ -15,14 +15,20 @@ resource "aws_ecs_task_definition" "backend_task" {
     container_definitions = <<EOT
 [
     {
-        "name": "example_app_container",
-        "image": "${var.repo_url}:latest",
+        "name": "slack_skb_container",
+        "image": "${aws_ecr_repository.ecr_repo.repository_url}:latest",
         "memory": 512,
         "essential": true,
         "portMappings": [
             {
                 "containerPort": 3000,
                 "hostPort": 3000
+            }
+        ],
+        "environmentFiles": [
+            {
+                "value": "${aws_s3_bucket.slack_skb_bucket.arn}/en.env",
+                "type": "s3"
             }
         ]
     }
@@ -31,7 +37,7 @@ EOT
 }
 
 resource "aws_ecs_cluster" "backend_cluster" {
-    name = "backend_cluster_example_app"
+    name = "backend_cluster_slack_skb"
 }
 
 resource "aws_ecs_service" "backend_service" {
@@ -45,7 +51,7 @@ resource "aws_ecs_service" "backend_service" {
 
     network_configuration {
         subnets = ["${aws_subnet.public_a.id}", "${aws_subnet.public_b.id}"]
-        security_groups = ["${aws_security_group.security_group_example_app.id}"]
+        security_groups = ["${aws_security_group.security_group_slack_skb.id}"]
         assign_public_ip = true
     }
 }

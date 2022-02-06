@@ -7,8 +7,3 @@ variable "region" {
     type = string
     description = "AWS region to use"
 }
-
-variable "repo_url" {
-    type = string
-    description = "AWS ECR repo url"
-}
