@@ -19,6 +19,7 @@ Simple Karma Bot
     - REQUIRED: AWS profile/account setup with an IAM user
     - REQUIRED: Generate the secret keys on the IAM user and put them in the ~/.aws/credentials file
     - REQUIRED: Set a ~/.aws/config file with the region
+    - TODO: Run bolt app within docker image locally -> with env vars for slack keys
     - TODO: Run terraform commands againts the right AWS profile/account
     - TODO: Create an ec2/ecs instance that runs this docker file
     - TODO: Make the docker image run the bolt app
