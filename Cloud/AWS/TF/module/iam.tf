@@ -1,6 +1,34 @@
 resource "aws_iam_role" "ecs_role" {
   name = "ecs_role_slack_skb"
 
+  inline_policy {
+    name = "my_inline_policy"
+
+    policy = jsonencode({
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:GetObject"
+          ],
+          "Resource": [
+            "${aws_s3_bucket.slack_skb_bucket.arn}/en.env"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:GetBucketLocation"
+          ],
+          "Resource": [
+            "${aws_s3_bucket.slack_skb_bucket.arn}"
+          ]
+        }
+      ]
+    })
+  }
+
   assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
