@@ -58,11 +58,12 @@ const listen = function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
-		
-		await postMessage(client, event, `${JSON.stringify(MATCH.ANYWHERE_PATTERN.test(event?.text))}`);
-		await postMessage(client, event, `${JSON.stringify(event)}`);
-		await postMessage(client, event, `${activeUsers.map(u => u.name).join(', ')}`);
-		await postMessage(client, event, `${activeUsers.map(u => u.real_name).join(', ')}`);
+
+		// DEBUG
+		// await postMessage(client, event, `${JSON.stringify(MATCH.ANYWHERE_PATTERN.test(event?.text))}`);
+		// await postMessage(client, event, `${JSON.stringify(event)}`);
+		// await postMessage(client, event, `${activeUsers.map(u => u.name).join(', ')}`);
+		// await postMessage(client, event, `${activeUsers.map(u => u.real_name).join(', ')}`);
 
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
@@ -79,8 +80,6 @@ const listen = function (app) {
 						return;
 					}
 
-					// await postMessage(client, event, ``);
-
 					adjustKarma(state, userToKarma, operator);
 					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 				} else if (possibleUsers?.length > 1) {
@@ -92,7 +91,6 @@ const listen = function (app) {
 				}
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
-				await postMessage(client, event, `targetUserId: ${targetUserId}`);
 				const userToKarma = activeUsers.find(user => user.id === targetUserId); // targetUserId is a unique ID here as a result of the @ syntax
 				if (!userToKarma) {
 					await postMessage(client, event, `Failed to find a possible user.`);
@@ -101,8 +99,6 @@ const listen = function (app) {
 					await postMessage(client, event, `Hey, you can't give yourself karma!`);
 					return;
 				}
-
-				// await postMessage(client, event, ``);
 
 				adjustKarma(state, userToKarma, operator);
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
