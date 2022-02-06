@@ -32,8 +32,11 @@ SLACK_APP_TOKEN=<KEY_HERE>
     - REQUIRED: Generate the secret keys on the IAM user and put them in the ~/.aws/credentials file
     - REQUIRED: Set a ~/.aws/config file with the region
     - COMPLETE: Run bolt app within docker image locally -> with env vars for slack keys
-    - TODO: Run terraform commands againts the right AWS profile/account
-    - TODO: Create an ec2/ecs instance that runs this docker file
+    - COMPLETE: Run terraform commands againts the right AWS profile/account
+    - COMPLETE: Create a docker image repo
+    - COMPLETE: Create the IAM settings and service/task definitions
+    - COMPLETE: Create a fargate service that runs this docker image
+    - COMPLETE: Bolt-JS app running in AWS and picking up on slack messages.
 
  - Terraform managed MongoDB instance that the js-bolt app can read/write to/from
 
