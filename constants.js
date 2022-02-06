@@ -1,7 +1,7 @@
 'use strict';
 
 const MATCH = {
-	START_PATTERN: /^([A-z.]+\s?)(\+\+|--)$/,
+	START_PATTERN: /^([A-z0-9.]+\s?)(\+\+|--)$/,
 	ANYWHERE_PATTERN: /^.*?@(.*)(\+\+|--).*?/,
 };
 
@@ -21,12 +21,12 @@ const adjustKarma = function(state, userToKarma, operator) {
 
 const addKarma = function(state, userToKarma) {
 	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = 1;
-	if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
+	else if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
 };
 
 const removeKarma = function(state, userToKarma) {
 	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = -1;
-	if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
+	else if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
 }
 
 const getTargetUserAndOperator = function(text) {
@@ -89,6 +89,7 @@ const listen = function (app) {
 					return;
 				}
 
+				console.log('userToKarma: ', JSON.parse(JSON.stringify(userToKarma)));
 				adjustKarma(state, userToKarma, operator);
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
 			} else if (/^karma all/.test(event?.text)) {
