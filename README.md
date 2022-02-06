@@ -3,7 +3,7 @@ Simple Karma Bot
 
 ## Slack.com Setup Steps
 
- - Create a new slack app with using the folling manifest:
+ - Create a new slack app using the following manifest:
  ```
  display_information:
   name: Simple Karma Bot
