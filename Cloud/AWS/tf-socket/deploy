@@ -1,0 +1,4 @@
+#!/bin/bash
+
+terraform apply
+cd ../../../ && npm run dbuild && npm run dtag && npm run dpush;
