@@ -34,7 +34,6 @@ SLACK_APP_TOKEN=<KEY_HERE>
     - COMPLETE: Run bolt app within docker image locally -> with env vars for slack keys
     - TODO: Run terraform commands againts the right AWS profile/account
     - TODO: Create an ec2/ecs instance that runs this docker file
-    - TODO: Make the docker image run the bolt app
 
  - Terraform managed MongoDB instance that the js-bolt app can read/write to/from
 
