@@ -46,6 +46,10 @@ SLACK_APP_TOKEN=<KEY_HERE>
 
 _You can find these secret values in the [slack api app settings](https://api.slack.com/apps/)_
 
+### Set the SKB_ECR_URL env variable in your shell dotfile (.profile)
+
+`export SKB_ECR_URL="<VALUE_FROM_AWS>"`
+
 ### Docs
 
  - https://slack.dev/bolt-js/concepts
