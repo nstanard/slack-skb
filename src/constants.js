@@ -81,12 +81,7 @@ const getFormattedUserList = function () {
 	}, '');
 };
 
-const userIsGivingSelfKarma = async function (
-	client,
-	event,
-	operator,
-	userToKarma,
-) {
+const userIsGivingSelfKarma = async function (client, event, operator, userToKarma) {
 	if (!userToKarma) {
 		await postMessage(client, event, `Failed to find a possible user.`);
 		return 1;
@@ -101,69 +96,30 @@ const userIsGivingSelfKarma = async function (
 const listen = async function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
-		const activeUsers = usersList.members.filter(
-			(user) => !user.is_bot && !user.deleted && user.name !== 'slackbot',
-		);
+		const activeUsers = usersList.members.filter((user) => !user.is_bot && !user.deleted && user.name !== 'slackbot');
 
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) {
-				const { operator, targetUserId } = getTargetUserAndOperator(
-					event.text,
-					MATCH.START_PATTERN,
-				);
-				const possibleUsers = activeUsers.filter(
-					(user) =>
-						user.name.toLowerCase() === targetUserId.toLowerCase() ||
-						user.real_name.toLowerCase() === targetUserId.toLowerCase(),
-				);
+				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.START_PATTERN);
+				const possibleUsers = activeUsers.filter((user) => user.name.toLowerCase() === targetUserId.toLowerCase() || user.real_name.toLowerCase() === targetUserId.toLowerCase());
 				if (possibleUsers?.length === 1) {
 					const userToKarma = possibleUsers[0];
-					if (userIsGivingSelfKarma(client, event, operator, userToKarma))
-						return;
+					if (userIsGivingSelfKarma(client, event, operator, userToKarma)) return;
 					adjustKarma({ state, userToKarma, operator });
-					await postMessage(
-						client,
-						event,
-						`${userToKarma.real_name} now has ${
-							state[userToKarma.real_name]
-						} karma.`,
-					);
+					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 				} else if (possibleUsers?.length > 1) {
-					await postMessage(
-						client,
-						event,
-						`Be more specific, I know ${
-							possibleUsers.length
-						} people named like that: ${possibleUsers
-							.map((user) => user.name)
-							.join(', ')}`,
-					);
+					await postMessage(client, event, `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map((user) => user.name).join(', ')}`);
 					return;
 				} else {
-					await postMessage(
-						client,
-						event,
-						`Sorry, I don't recognize the user named ${targetUserId}`,
-					);
+					await postMessage(client, event, `Sorry, I don't recognize the user named ${targetUserId}`);
 					return;
 				}
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) {
-				const { operator, targetUserId } = getTargetUserAndOperator(
-					event.text,
-					MATCH.ANYWHERE_PATTERN,
-				);
-				const userToKarma = activeUsers.find(
-					(user) => user.id === targetUserId,
-				);
+				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
+				const userToKarma = activeUsers.find((user) => user.id === targetUserId);
 				if (userIsGivingSelfKarma(client, event, operator, userToKarma)) return;
 				adjustKarma({ state, userToKarma, operator });
-				await postMessage(
-					client,
-					event,
-					`${userToKarma.real_name} now has ${
-						state[userToKarma.real_name]
-					} karma.`,
-				);
+				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 			} else if (/^karma all/.test(event?.text)) {
 				const userList = getFormattedUserList();
 				await postMessage(client, event, userList);
