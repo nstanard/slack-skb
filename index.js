@@ -1,6 +1,6 @@
 'use strict';
-const app = require('./init');
-const { listen } = require('./constants');
+const app = require('./src/init');
+const { listen } = require('./src/constants');
 
 /**
  * <name>++ | <name> ++   : Adds karma to a user

@@ -7,8 +7,8 @@
     "start": "node .",
     "dbuild": "docker build -t slack-skb .",
     "drun": "docker run -p 12345:3000 -d slack-skb",
-    "dtag": "docker tag slack-skb:latest 475566676433.dkr.ecr.us-east-1.amazonaws.com/slack_skb:latest",
-    "dpush": "docker push 475566676433.dkr.ecr.us-east-1.amazonaws.com/slack_skb:latest"
+    "dtag": "docker tag slack-skb:latest $SKB_ECR_URL:latest",
+    "dpush": "docker push $SKB_ECR_URL:latest"
   },
   "repository": {
     "type": "git",
