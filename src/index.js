@@ -1,6 +1,6 @@
-'use strict';
-const app = require('./init');
-const { listen } = require('./constants');
+"use strict";
+const app = require("./init");
+const { listen } = require("./constants");
 
 /**
  * <name>++ | <name> ++   : Adds karma to a user
@@ -15,5 +15,5 @@ listen(app);
 (async () => {
   // Start your app
   await app.start(process.env.PORT || 3000);
-  console.log('⚡️ Karma listening active!');
+  console.log("⚡️ Karma listening active!");
 })();

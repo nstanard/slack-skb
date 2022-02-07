@@ -4,6 +4,7 @@
   "description": "Simple point tracking",
   "main": "src/index.js",
   "scripts": {
+    "format": "npx prettier --write .",
     "start": "node .",
     "dbuild": "docker build -t slack-skb .",
     "drun": "docker run -p 12345:3000 -d slack-skb",
@@ -24,5 +25,8 @@
     "@slack/bolt": "^3.9.0",
     "aws-sdk": "^2.1069.0",
     "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "prettier": "2.5.1"
   }
 }

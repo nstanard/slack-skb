@@ -1,3 +1,4 @@
+# bucket to upload object to
 resource "aws_s3_bucket" "slack_skb_bucket" {
   bucket = "slack-skb-env-vars"
   acl    = "private"
