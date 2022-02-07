@@ -42,7 +42,7 @@ const addKarma = async function (state, user) {
 		id: user[KEY_FOR_STATE],
 		name: user.name,
 		realName: user.real_name,
-		karma: state[user[KEY_FOR_STATE]],
+		karma: state[user[KEY_FOR_STATE]].karma,
 	});
 };
 
@@ -53,7 +53,7 @@ const removeKarma = async function (state, user) {
 		id: user[KEY_FOR_STATE],
 		name: user.name,
 		realName: user.real_name,
-		karma: state[user[KEY_FOR_STATE]],
+		karma: state[user[KEY_FOR_STATE]].karma,
 	});
 };
 

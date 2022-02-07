@@ -32,7 +32,7 @@ const getDynamoWriteParams = ({ id, name, realName, karma }) => {
 
 const writeToDb = ({ id, name, realName, karma }) => {
 	return new Promise((resolve, _reject) => {
-		return dynamo.put(getDynamoWriteParams(id, name, realName, karma), function (err, data) {
+		return dynamo.put(getDynamoWriteParams({ id, name, realName, karma }), function (err, data) {
 			if (err) {
 				resolve({});
 			} else {
