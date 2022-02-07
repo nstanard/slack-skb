@@ -2,6 +2,8 @@
 var AWS = require('aws-sdk');
 var dynamo = new AWS.DynamoDB.DocumentClient();
 
+const state = {};
+
 const MATCH = {
 	START_PATTERN: /^([A-z0-9.]+\s?)(\+\+|--)$/,
 	ANYWHERE_PATTERN: /^.*?@(.*)(\+\+|--).*?/,
@@ -18,8 +20,6 @@ const postMessage = async function(client, event, message) {
 		text: message
 	});
 }
-
-const state = {};
 
 const adjustKarma = function(state, userToKarma, operator) {
 	if (operator === OPERATORS.PLUS) addKarma(state, userToKarma);
@@ -67,7 +67,7 @@ const getFormattedUserList = function() {
 	}, '');
 }
 
-const userGivingSelfKarma = function(client, event, operator, userToKarma) {
+const userIsGivingSelfKarma = function(client, event, operator, userToKarma) {
 	if (!userToKarma) {
 		await postMessage(client, event, `Failed to find a possible user.`);
 		return 1;
@@ -90,7 +90,7 @@ const listen = function (app) {
 				const possibleUsers = activeUsers.filter(user => user.name.toLowerCase() === targetUserId.toLowerCase() || user.real_name.toLowerCase() === targetUserId.toLowerCase());
 				if (possibleUsers?.length === 1) {
 					const userToKarma = possibleUsers[0];
-					if (userGivingSelfKarma(client, event, operator, userToKarma)) return;
+					if (userIsGivingSelfKarma(client, event, operator, userToKarma)) return;
 					adjustKarma(state, userToKarma, operator);
 					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 				} else if (possibleUsers?.length > 1) {
@@ -103,7 +103,7 @@ const listen = function (app) {
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) {
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
 				const userToKarma = activeUsers.find(user => user.id === targetUserId);
-				if (userGivingSelfKarma(client, event, operator, userToKarma)) return;
+				if (userIsGivingSelfKarma(client, event, operator, userToKarma)) return;
 				adjustKarma(state, userToKarma, operator);
 				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 			} else if (/^karma all/.test(event?.text)) {
