@@ -1,7 +1,11 @@
 # slack-skb
 Simple Karma Bot
 
-## 1. Slack.com Setup Steps
+## Setup Instructions 
+
+Follow these steps to setup a simple karma point tracker using Slack, AWS, and Terraform.
+
+### 1. Slack.com Setup Steps
 
  - Create a new slack app using the following manifest:
  ```
@@ -35,7 +39,7 @@ settings:
 
  - Create an app level token with `connections:write` 
 
-## 2a. Environment Variables
+### 2a. Environment Variables
 
 Create a file called `.env` with the following variables:
 ```
@@ -46,7 +50,7 @@ SLACK_APP_TOKEN=<KEY_HERE>
 
 _You can find these secret values in the [slack api app settings](https://api.slack.com/apps/)_
 
-## 2b. Set the SKB_ECR_URL env variable in your shell dotfile (.profile)
+### 2b. Set the SKB_ECR_URL env variable in your shell dotfile (.profile)
 
 This is used to push the docker image to AWS ECR to be used by the container.
 
