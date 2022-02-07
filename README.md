@@ -48,6 +48,8 @@ _You can find these secret values in the [slack api app settings](https://api.sl
 
 ### Set the SKB_ECR_URL env variable in your shell dotfile (.profile)
 
+This is used to push the docker image to AWS ECR to be used by the container.
+
 `export SKB_ECR_URL="<VALUE_FROM_AWS>"`
 
 ### Docs
