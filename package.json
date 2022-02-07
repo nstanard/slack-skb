@@ -2,7 +2,7 @@
   "name": "slack-skb",
   "version": "1.0.0",
   "description": "Simple point tracking",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "node .",
     "dbuild": "docker build -t slack-skb .",
