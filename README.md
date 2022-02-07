@@ -71,3 +71,4 @@ This is used to push the docker image to AWS ECR to be used by the container.
 ### Learning Material
 
 - https://www.youtube.com/watch?v=rUIptoPXu_8
+- https://javascript.plainenglish.io/4-step-guide-to-setting-up-eslint-prettier-d87904a7746e

@@ -1,32 +1,35 @@
 {
-  "name": "slack-skb",
-  "version": "1.0.0",
-  "description": "Simple point tracking",
-  "main": "src/index.js",
-  "scripts": {
-    "format": "npx prettier --write .",
-    "start": "node .",
-    "dbuild": "docker build -t slack-skb .",
-    "drun": "docker run -p 12345:3000 -d slack-skb",
-    "dtag": "docker tag slack-skb:latest $SKB_ECR_URL:latest",
-    "dpush": "docker push $SKB_ECR_URL:latest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nstanard/slack-skb.git"
-  },
-  "author": "Neal Stanard",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/nstanard/slack-skb/issues"
-  },
-  "homepage": "https://github.com/nstanard/slack-skb#readme",
-  "dependencies": {
-    "@slack/bolt": "^3.9.0",
-    "aws-sdk": "^2.1069.0",
-    "dotenv": "^16.0.0"
-  },
-  "devDependencies": {
-    "prettier": "2.5.1"
-  }
+	"name": "slack-skb",
+	"version": "1.0.0",
+	"description": "Simple point tracking",
+	"main": "src/index.js",
+	"scripts": {
+		"format": "npx prettier --write .",
+		"start": "node .",
+		"dbuild": "docker build -t slack-skb .",
+		"drun": "docker run -p 12345:3000 -d slack-skb",
+		"dtag": "docker tag slack-skb:latest $SKB_ECR_URL:latest",
+		"dpush": "docker push $SKB_ECR_URL:latest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nstanard/slack-skb.git"
+	},
+	"author": "Neal Stanard",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/nstanard/slack-skb/issues"
+	},
+	"homepage": "https://github.com/nstanard/slack-skb#readme",
+	"dependencies": {
+		"@slack/bolt": "^3.9.0",
+		"aws-sdk": "^2.1069.0",
+		"dotenv": "^16.0.0"
+	},
+	"devDependencies": {
+		"eslint": "^8.8.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-prettier": "^4.0.0",
+		"prettier": "^2.5.1"
+	}
 }
