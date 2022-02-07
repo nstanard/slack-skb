@@ -1,5 +1,5 @@
 'use strict';
-const app = require('./appInit');
+const app = require('./init');
 const { listen } = require('./constants');
 
 /**
