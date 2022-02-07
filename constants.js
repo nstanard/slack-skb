@@ -1,4 +1,6 @@
 'use strict';
+var AWS = require('aws-sdk');
+var dynamo = new AWS.DynamoDB.DocumentClient();
 
 const MATCH = {
 	START_PATTERN: /^([A-z0-9.]+\s?)(\+\+|--)$/,
@@ -25,13 +27,15 @@ const adjustKarma = function(state, userToKarma, operator) {
 }
 
 const addKarma = function(state, userToKarma) {
-	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = 1;
-	else if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
+
+	// if (!state[userToKarma.real_name]) state[userToKarma.real_name] = 1;
+	// else if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
 };
 
 const removeKarma = function(state, userToKarma) {
-	if (!state[userToKarma.real_name]) state[userToKarma.real_name] = -1;
-	else if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
+
+	// if (!state[userToKarma.real_name]) state[userToKarma.real_name] = -1;
+	// else if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
 }
 
 const getTargetUserAndOperator = function(text, pattern) {
@@ -45,7 +49,16 @@ const getTargetUserAndOperator = function(text, pattern) {
 }
 
 const getTupplesFromState = function(params) {
-	return Object.entries(state);
+	dynamoDB
+		.scan({
+			TableName: "slack-skb-db",
+		})
+		.promise()
+		.then(data => {
+			console.log(data.Items);
+			return Object.entries(state);
+		})
+		.catch(console.error)
 }
 
 const getFormattedUserList = function() {
@@ -54,34 +67,32 @@ const getFormattedUserList = function() {
 	}, '');
 }
 
+const userGivingSelfKarma = function(client, event, operator, userToKarma) {
+	if (!userToKarma) {
+		await postMessage(client, event, `Failed to find a possible user.`);
+		return 1;
+	} else if (operator === OPERATORS.PLUS && event.user === userToKarma.id) {
+		await postMessage(client, event, `Hey, you can't give yourself karma!`);
+		return 1;
+	}
+
+	return 0;
+}
+
 const listen = function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
 
-		// DEBUG
-		// await postMessage(client, event, `${JSON.stringify(MATCH.ANYWHERE_PATTERN.test(event?.text))}`);
-		// await postMessage(client, event, `${JSON.stringify(event)}`);
-		// await postMessage(client, event, `${activeUsers.map(u => u.name).join(', ')}`);
-		// await postMessage(client, event, `${activeUsers.map(u => u.real_name).join(', ')}`);
-
 		try {
-			if (MATCH.START_PATTERN.test(event?.text)) { // ^(<name>++|<name> ++|<name>--| <name> --)$
+			if (MATCH.START_PATTERN.test(event?.text)) {
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.START_PATTERN);
-				// lowercase and check both name and real_name
 				const possibleUsers = activeUsers.filter(user => user.name.toLowerCase() === targetUserId.toLowerCase() || user.real_name.toLowerCase() === targetUserId.toLowerCase());
 				if (possibleUsers?.length === 1) {
 					const userToKarma = possibleUsers[0];
-					if (!userToKarma) {
-						await postMessage(client, event, `Failed to find a possible user.`);
-						return;
-					} else if (operator === OPERATORS.PLUS && event.user === userToKarma.id) {
-						await postMessage(client, event, `Hey, you can't give yourself karma!`);
-						return;
-					}
-
+					if (userGivingSelfKarma(client, event, operator, userToKarma)) return;
 					adjustKarma(state, userToKarma, operator);
-					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
+					await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 				} else if (possibleUsers?.length > 1) {
 					await postMessage(client, event, `Be more specific, I know ${possibleUsers.length} people named like that: ${possibleUsers.map(user => user.name).join(', ')}`);
 					return;
@@ -89,22 +100,15 @@ const listen = function (app) {
 					await postMessage(client, event, `Sorry, I don't recognize the user named ${targetUserId}`);
 					return;
 				}
-			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) { // .* (@<name>++|@<name> ++|@<name>--| @<name> --) .*
+			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) {
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
-				const userToKarma = activeUsers.find(user => user.id === targetUserId); // targetUserId is a unique ID here as a result of the @ syntax
-				if (!userToKarma) {
-					await postMessage(client, event, `Failed to find a possible user.`);
-					return;
-				} else if (operator === OPERATORS.PLUS && event.user === userToKarma.id) {
-					await postMessage(client, event, `Hey, you can't give yourself karma!`);
-					return;
-				}
-
+				const userToKarma = activeUsers.find(user => user.id === targetUserId);
+				if (userGivingSelfKarma(client, event, operator, userToKarma)) return;
 				adjustKarma(state, userToKarma, operator);
-				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`); // AWARD KARMA AND REPORT
+				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 			} else if (/^karma all/.test(event?.text)) {
 				const userList = getFormattedUserList();
-				await postMessage(client, event, userList); // AWARD KARMA AND REPORT
+				await postMessage(client, event, userList);
 			} else if (/^karma/.test(event?.text)) {
 				await postMessage(client, event, `Commands: 
 				- *'@<name>++ | @<name>--'* adds or removes karma for a user
