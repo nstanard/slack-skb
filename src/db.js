@@ -31,12 +31,14 @@ const getDynamoWriteParams = ({ id, name, realName, karma }) => {
 };
 
 const writeToDb = ({ id, name, realName, karma }) => {
-	return dynamo.put(getDynamoWriteParams(id, name, realName, karma), function (err, data) {
-		if (err) {
-			console.log('Error', err);
-		} else {
-			console.log('Success', data);
-		}
+	return new Promise((resolve, _reject) => {
+		return dynamo.put(getDynamoWriteParams(id, name, realName, karma), function (err, data) {
+			if (err) {
+				resolve({});
+			} else {
+				resolve(data);
+			}
+		});
 	});
 };
 
