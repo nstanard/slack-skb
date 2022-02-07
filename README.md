@@ -50,6 +50,11 @@ _You can find these secret values in the [slack api app settings](https://api.sl
 
  - https://slack.dev/bolt-js/concepts
 
+ - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
+ - https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/dynamodb-example-document-client.html
+ - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#putItem-propertyc
+ - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table
+
 
 ### Learning Material
 

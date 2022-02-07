@@ -6,7 +6,7 @@ const nconf = require('nconf');
 
 // Read in keys and secrets. Using nconf use can set secrets via
 // environment variables, command-line arguments, or a keys.json file.
-nconf.argv().env().file('keys.json');
+nconf.argv().env().filemd5('keys.json');
 
 const user = nconf.get('mongoUser');
 const pass = nconf.get('mongoPass');

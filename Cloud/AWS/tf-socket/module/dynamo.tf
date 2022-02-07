@@ -11,11 +11,6 @@ resource "aws_dynamodb_table" "slack_skb_db" {
     type = "S"
   }
 
-  # attribute {
-  #   name = "karma"
-  #   type = "N"
-  # }
-
   tags = {
     Name        = "slack-skb-table"
   }

@@ -1,19 +1,53 @@
 'use strict';
 var AWS = require('aws-sdk');
+AWS.config.update({ region: 'us-east-1' });
 var dynamo = new AWS.DynamoDB.DocumentClient();
 
-var params = {
-	TableName: 'USERS',
-	Key: { 'ID': '123' }
-};
+const TABLE_NAME =  'slack-skb-db';
 
-dynamo.put(params, function(err, data) {
-	if (err) {
-	console.log("Error", err);
-	} else {
-	console.log("Success", data.Item);
-	}
-});
+const getDynamoWriteParams = (id, name, realName, karma) => {
+	return {
+		TableName: TABLE_NAME,
+		Item: {
+			"id": id,
+			name,
+			realName,
+			karma,
+		},
+	};
+}
+
+const writeToDb = (id, name, realName, karma) => {
+	return dynamo.put(getDynamoWriteParams(id, name, realName, karma), function(err, data) {
+		if (err) {
+			console.log("Error", err);
+		} else {
+			console.log("Success", data);
+		}
+	});
+}
+
+const getDynamoReadParams = (id, name, realName, karma) => {
+	return {
+		TableName: TABLE_NAME,
+		Key: {
+			"id": id
+		},
+	};
+}
+
+const getUser = async (id) => {
+	return new Promise((resolve, reject) => {
+		dynamo.get(getDynamoReadParams(id), function(err, data) {
+			if (err) {
+				resolve({});
+			} else {
+				resolve(data?.Item);
+			}
+		});
+	});
+}
+// const data = await getUser(targetUserId);
 
 const state = {};
 
@@ -40,13 +74,13 @@ const adjustKarma = function(state, userToKarma, operator) {
 }
 
 const addKarma = function(state, userToKarma) {
-
+	
 	// if (!state[userToKarma.real_name]) state[userToKarma.real_name] = 1;
 	// else if (state[userToKarma.real_name]) state[userToKarma.real_name]++;
 };
 
 const removeKarma = function(state, userToKarma) {
-
+	
 	// if (!state[userToKarma.real_name]) state[userToKarma.real_name] = -1;
 	// else if (state[userToKarma.real_name]) state[userToKarma.real_name]--;
 }
@@ -63,15 +97,15 @@ const getTargetUserAndOperator = function(text, pattern) {
 
 const getTupplesFromState = function(params) {
 	dynamoDB
-		.scan({
-			TableName: "slack-skb-db",
-		})
-		.promise()
-		.then(data => {
-			console.log(data.Items);
-			return Object.entries(state);
-		})
-		.catch(console.error)
+	.scan({
+		TableName: "slack-skb-db",
+	})
+	.promise()
+	.then(data => {
+		console.log(data.Items);
+		return Object.entries(state);
+	})
+	.catch(console.error)
 }
 
 const getFormattedUserList = function() {
@@ -80,7 +114,7 @@ const getFormattedUserList = function() {
 	}, '');
 }
 
-const userIsGivingSelfKarma = function(client, event, operator, userToKarma) {
+const userIsGivingSelfKarma = async function(client, event, operator, userToKarma) {
 	if (!userToKarma) {
 		await postMessage(client, event, `Failed to find a possible user.`);
 		return 1;
@@ -88,15 +122,15 @@ const userIsGivingSelfKarma = function(client, event, operator, userToKarma) {
 		await postMessage(client, event, `Hey, you can't give yourself karma!`);
 		return 1;
 	}
-
+	
 	return 0;
 }
 
-const listen = function (app) {
+const listen = async function (app) {
 	return app.event('message', async ({ event, client, logger }) => {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter(user => !user.is_bot && !user.deleted && user.name !== 'slackbot');
-
+		
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) {
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.START_PATTERN);
@@ -116,9 +150,12 @@ const listen = function (app) {
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) {
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
 				const userToKarma = activeUsers.find(user => user.id === targetUserId);
-				if (userIsGivingSelfKarma(client, event, operator, userToKarma)) return;
-				adjustKarma(state, userToKarma, operator);
-				await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
+				// console.log('userToKarma: ', JSON.parse(JSON.stringify(userToKarma)));
+				// console.log('data: ', JSON.parse(JSON.stringify(data)));
+				// writeToDb(targetUserId, userToKarma.name, userToKarma.real_name, 1);
+				// if (userIsGivingSelfKarma(client, event, operator, userToKarma)) return;
+				// adjustKarma(state, userToKarma, operator);
+				// await postMessage(client, event, `${userToKarma.real_name} now has ${state[userToKarma.real_name]} karma.`);
 			} else if (/^karma all/.test(event?.text)) {
 				const userList = getFormattedUserList();
 				await postMessage(client, event, userList);
