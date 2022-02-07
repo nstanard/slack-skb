@@ -2,6 +2,19 @@
 var AWS = require('aws-sdk');
 var dynamo = new AWS.DynamoDB.DocumentClient();
 
+var params = {
+	TableName: 'USERS',
+	Key: { 'ID': '123' }
+};
+
+dynamo.put(params, function(err, data) {
+	if (err) {
+	console.log("Error", err);
+	} else {
+	console.log("Success", data.Item);
+	}
+});
+
 const state = {};
 
 const MATCH = {

@@ -24,6 +24,11 @@ resource "aws_iam_role" "ecs_role" {
           "Resource": [
             "${aws_s3_bucket.slack_skb_bucket.arn}"
           ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": "dynamodb:*",
+            "Resource": "${aws_dynamodb_table.slack_skb_db.arn}:table/${aws_dynamodb_table.slack_skb_db.id}"
         }
       ]
     })
