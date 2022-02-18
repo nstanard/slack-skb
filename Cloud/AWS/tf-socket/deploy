@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Docker must be running and authenticated. (dauth command shortcut)\n"
+
 echo ""
 read -p "Would you like to apply the terraform? [Y/n]: " response
 response=${response:-y}

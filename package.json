@@ -6,10 +6,10 @@
 	"scripts": {
 		"format": "npx prettier --write .",
 		"start": "node .",
-		"dbuild": "docker build -t slack-skb .",
-		"drun": "docker run -p 12345:3000 -d slack-skb",
-		"dtag": "docker tag slack-skb:latest $SKB_ECR_URL:latest",
-		"dpush": "docker push $SKB_ECR_URL:latest"
+		"drun": "docker run -p 12345:3000 -d slack_skb",
+		"dbuild": "docker build -t slack_skb .",
+		"dtag": "docker tag slack_skb:latest $SKB_ECR_URL/slack_skb:latest",
+		"dpush": "docker push $SKB_ECR_URL/slack_skb:latest"
 	},
 	"repository": {
 		"type": "git",
