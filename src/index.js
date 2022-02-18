@@ -24,8 +24,6 @@ const syndDbAndListen = async function () {
 
 (async () => {
 	await syndDbAndListen();
-	
-	// Start your app
 	await app.start(process.env.PORT || 3000);
 	console.log('⚡️ Karma listening active!');
 })();
