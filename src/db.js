@@ -11,11 +11,13 @@ const getScanParams = ({ id, name, realName, karma }) => {
 	};
 };
 
-const scan = ({}) => {
-	return dynamo.scan(getScanParams({}), function (err, data) {
-		if (err) console.log(err);
-		else console.log(data);
-	});
+const scan = async ({}) => {
+	let returnData = {};
+	let res;
+	try {
+		res = await dynamo.scan(getScanParams({})).promise();
+	} catch (error) {}
+	return res.Items;
 };
 
 const getDynamoWriteParams = ({ id, name, realName, karma }) => {

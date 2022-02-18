@@ -107,11 +107,8 @@ const listen = async function (app) {
 		const usersList = await client.users.list();
 		const activeUsers = usersList.members.filter((user) => !user.is_bot && !user.deleted && user.name !== 'slackbot');
 
-		console.log(MATCH.ANYWHERE_PATTERN.test(event?.text));
-
 		try {
 			if (MATCH.START_PATTERN.test(event?.text)) {
-				console.log(`1 ${event.text}`);
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.START_PATTERN);
 				const possibleUsers = activeUsers.filter((user) => user.name.toLowerCase() === targetUserId.toLowerCase() || user.real_name.toLowerCase() === targetUserId.toLowerCase());
 				if (possibleUsers?.length === 1) {
@@ -127,9 +124,7 @@ const listen = async function (app) {
 					return;
 				}
 			} else if (MATCH.ANYWHERE_PATTERN.test(event?.text)) {
-				console.log(`2 ${event.text}`);
 				const { operator, targetUserId } = getTargetUserAndOperator(event.text, MATCH.ANYWHERE_PATTERN);
-				console.log('targetUserId: ', targetUserId);
 				const userToKarma = activeUsers.find((user) => user.id === targetUserId);
 				// if (userIsGivingSelfKarma({client, event, operator, userToKarma})) return;
 				await adjustKarma({ state, userToKarma, operator });

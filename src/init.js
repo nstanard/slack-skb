@@ -1,9 +1,6 @@
 const { App } = require('@slack/bolt');
 require('dotenv').config();
 
-const { state } = require('./constants');
-const { scan } = require('./db');
-
 const app = new App({
 	token: process.env.SLACK_BOT_TOKEN,
 	signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -12,10 +9,5 @@ const app = new App({
 	// port: process.env.PORT || 3000 // Not for socket mode...
 });
 
-const syndDb = async function () {
-	console.log('state: ', JSON.parse(JSON.stringify(state)));
-	scan({});
-};
-syndDb();
 
 module.exports = app;
