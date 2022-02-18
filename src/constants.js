@@ -71,19 +71,6 @@ const getTargetUserAndOperator = function (text, pattern) {
 	};
 };
 
-const getTupplesFromState = function (params) {
-	dynamoDB
-		.scan({
-			TableName: 'slack-skb-db',
-		})
-		.promise()
-		.then((data) => {
-			console.log(data.Items);
-			return Object.entries(state);
-		})
-		.catch(console.error);
-};
-
 const getFormattedUserList = function () {
 	return getTupplesFromState().reduce((acc, item, ind) => {
 		return acc + `${ind}. ${item[0]}: ${item[1]}` + '\n';

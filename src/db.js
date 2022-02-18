@@ -11,8 +11,7 @@ const getScanParams = ({ id, name, realName, karma }) => {
 	};
 };
 
-const scan = async ({}) => {
-	let returnData = {};
+const scan = async () => {
 	let res;
 	try {
 		res = await dynamo.scan(getScanParams({})).promise();
