@@ -1,14 +1,6 @@
 'use strict';
 const { writeToDb } = require('./db');
 
-/**
- * {
- * 		id
- * 		realName
- *		name
- * 		karma
- * }
- */
 const state = {};
 const KEY_FOR_STATE = 'id';
 
