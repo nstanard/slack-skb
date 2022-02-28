@@ -16,7 +16,7 @@ const scan = async () => {
 	try {
 		res = await dynamo.scan(getScanParams({})).promise();
 	} catch (error) {}
-	return res.Items;
+	return res?.Items;
 };
 
 const getDynamoWriteParams = ({ id, name, realName, karma }) => {

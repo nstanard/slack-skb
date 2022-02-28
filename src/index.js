@@ -14,7 +14,7 @@ const { listen, state } = require('./constants');
 
 const syndDbAndListen = async function () {
 	const dbScan = await scan();
-	dbScan.reduce((acc, item) => {
+	dbScan && dbScan.reduce((acc, item) => {
 		acc[item.id] = item;
 		return acc;
 	}, state);
